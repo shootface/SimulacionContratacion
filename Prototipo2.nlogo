@@ -1,5 +1,9 @@
-turtles-own [felicidad]
-patch-own[salario horas]
+turtles-own [felicidad
+  gasto-medio
+  trabajando ;Boolean estado del trabajador
+]
+patches-own[salario-horas
+  contrato];contrato: horas diarias de trabajo / salario: 20 hora minimo
 
 globals [patches-usados]
 
@@ -10,17 +14,32 @@ to setup
   reset-ticks
 end
 
-to setup-lugares 
+to setup-lugares
   set patches-usados 40 * 36 * densidad-empresas / 100
-  repeat patches-usados [ask patch ((random 41) - 20) ((random 33) - 16) [set pcolor 92]]
+  repeat patches-usados [
+    ask patch ((random 41) - 20) ((random 33) - 16) [
+      set pcolor 92 ;;Establece el color de los Patch (empresas)
+      set salario-horas ((random 120) - 20) ;salario por hora
+      set contrato ((random 10) - 2);horas por trabajar
+    ]
+  ]
 end
-
 to setup-proletariado
   create-turtles cantidad-trabajadores
   ask turtles [
     set shape "person"
     setxy random-xcor random-ycor
     set felicidad 0
+    set gasto-medio ((random 3900) - 900); el trabajador debe ganar minimo el salario minimo 900
+  ]
+end
+to mover-trabajadores
+
+  ask turtles [
+    left random angulo-busqueda
+    right random angulo-busqueda
+    forward 1
+    set felicidad (felicidad - depresion)
   ]
 end
 
@@ -32,23 +51,13 @@ to go
   trabajar
   reproducirse
   indice-felicidad
-;   generar-nuevos-empleos
   tick
-end
-
-to mover-trabajadores
-  ask turtles [
-    left random angulo-busqueda
-    right random angulo-busqueda
-    forward 1
-    set felicidad (felicidad - depresion)
-  ]
 end
 
 to trabajar
   ask turtles [
     if pcolor = 92 [
-      set felicidad (felicidad + satisfaccion-laboral)
+      set felicidad (felicidad + satisfaccion-laboral);falta definir la satisfacción laboral
     ]
     ifelse felicidad < max [felicidad] of turtles and felicidad > (max [felicidad] of turtles) / 2
     [set color green]
@@ -67,7 +76,6 @@ to reproducirse
     ]
   ]
 end
-
 to indice-felicidad
   ask turtles [
     if felicidad <= 0 [
@@ -75,10 +83,9 @@ to indice-felicidad
     ]
   ]
 end
-
 to variar-empleos
-  if ticks % 100 = 0
-   []
+  if ticks mod 100 = 0
+  []
 end
 
 ; to generar-nuevos-empleos
@@ -100,11 +107,11 @@ end
 GRAPHICS-WINDOW
 283
 18
-1103
-678
+1111
+687
 -1
 -1
-20
+20.0
 1
 10
 1
@@ -118,17 +125,17 @@ GRAPHICS-WINDOW
 20
 -16
 16
-1
-1
+0
+0
 1
 dias
-30
+30.0
 
 BUTTON
-120
-265
-189
-298
+157
+286
+226
+319
 Set Up
 setup
 NIL
@@ -142,10 +149,10 @@ NIL
 1
 
 BUTTON
-20
-265
-85
-298
+62
+288
+127
+321
 Iniciar
 go
 T
@@ -159,10 +166,10 @@ NIL
 0
 
 MONITOR
-10
-325
-88
-370
+48
+337
+126
+382
 trabajadores
 count turtles
 5
@@ -170,10 +177,10 @@ count turtles
 11
 
 MONITOR
-120
-325
-195
-370
+158
+337
+233
+382
 empleos
 count patches with [pcolor = 92]
 17
@@ -181,10 +188,10 @@ count patches with [pcolor = 92]
 11
 
 SWITCH
-40
-380
-194
-413
+66
+400
+220
+433
 mostrar-felicidad?
 mostrar-felicidad?
 0
@@ -192,23 +199,23 @@ mostrar-felicidad?
 -1000
 
 PLOT
-5
-425
-275
-575
+1116
+19
+1386
+169
 Nivel de Vida
 tiempo
 indicadores
-0
-10
-0
-10
+0.0
+10.0
+0.0
+10.0
 true
 true
 "" ""
 PENS
-"trabajadores" 1 0 -13840069 true "" "plot count turtles"
-"empleos" 1 0 -13791810 true "" "plot count patches with [pcolor = 92]"
+"trabajadores" 1.0 0 -13840069 true "" "plot count turtles"
+"empleos" 1.0 0 -13791810 true "" "plot count patches with [pcolor = 92]"
 
 SLIDER
 20
@@ -219,7 +226,7 @@ cantidad-trabajadores
 cantidad-trabajadores
 1
 100
-25
+69.0
 1
 1
 trabajadores
@@ -228,13 +235,13 @@ HORIZONTAL
 SLIDER
 19
 62
-191
+272
 95
 satisfaccion-laboral
 satisfaccion-laboral
 1
 30
-6
+6.0
 1
 1
 NIL
@@ -243,13 +250,13 @@ HORIZONTAL
 SLIDER
 19
 17
-204
+273
 50
 costo-reproduccion
 costo-reproduccion
 1
 30
-20
+20.0
 1
 1
 pesos
@@ -258,13 +265,13 @@ HORIZONTAL
 SLIDER
 20
 110
-192
+271
 143
 depresion
 depresion
 1
 30
-5
+5.0
 1
 1
 NIL
@@ -273,32 +280,33 @@ HORIZONTAL
 SLIDER
 20
 155
-207
+272
 188
 angulo-busqueda
 angulo-busqueda
 0
 360
-71
+71.0
 1
 1
 grados
 HORIZONTAL
 
 SLIDER
-225
-245
-258
-415
+21
+241
+271
+274
 densidad-empresas
 densidad-empresas
 0
 100
-50
+34.0
 1
 1
 NIL
-VERTICAL
+HORIZONTAL
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -677,22 +685,22 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.0
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 default
-0
--0.2 0 0 1
-0 1 1 0
-0.2 0 0 1
+0.0
+-0.2 0 0.0 1.0
+0.0 1 1.0 0.0
+0.2 0 0.0 1.0
 link direction
 true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-
+0
 @#$#@#$#@
