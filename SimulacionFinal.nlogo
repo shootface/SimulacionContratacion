@@ -3,6 +3,7 @@ globals [patches-usados]
 turtles-own [
   felicidad
   gasto-promedio-dia
+  desplazamiento;min: 5km max: 40km
   trabajando? ;booleano para saber el estado del trabajador
 ]
 
@@ -21,12 +22,35 @@ end
 to setup-lugares
   set patches-usados (40 * 36 * densidad-empresas / 100)
   ifelse densidad-empresas = 100
-  [ask patches [ set pcolor 92 ]]
+  [ask patches [
+       if (salario-horas >= 20) and (salario-horas < 40)
+        [set pcolor 97]
+      if (salario-horas >= 40) and (salario-horas < 60)
+        [set pcolor 87]
+      if (salario-horas >= 60) and (salario-horas < 80)
+        [set pcolor 77]
+      if (salario-horas >= 80) and (salario-horas < 100)
+        [set pcolor 67]
+      if (salario-horas > 100)
+        [set pcolor 57]
+     ]
+  ]
   [repeat patches-usados [
     ask patch ((random -41) + (random 41)) ((random -33) + (random 33)) [
-      set pcolor 92 ;establece el color de los patches (empresas)
-      set salario-horas ((random 101) + 20) ;salario por hora
+      set salario-horas ((random 100 - 20) + 20) ;salario por hora
       set contrato ((random 7) + 2) ;horas por trabajar
+      if (salario-horas >= 20) and (salario-horas < 40)
+        [set pcolor 97]
+      if (salario-horas >= 40) and (salario-horas < 60)
+        [set pcolor 87]
+      if (salario-horas >= 60) and (salario-horas < 80)
+        [set pcolor 77]
+      if (salario-horas >= 80) and (salario-horas < 100)
+        [set pcolor 67]
+      if (salario-horas > 100)
+        [set pcolor 57]
+       ;establece el color de los patches (empresas)
+      set plabel " "
     ]
   ]]
 end
@@ -38,6 +62,7 @@ to setup-proletariado
     setxy random-xcor random-ycor
     set felicidad 0
     set gasto-promedio-dia ((random 101) + 20); el trabajador debe gastar minimo 20 y maximo 120
+    set desplazamiento (random (40 - 5) + 5)
     set trabajando? false
   ]
 end
@@ -48,7 +73,7 @@ to mover-trabajadores
     right random angulo-busqueda
     forward 1
     set felicidad (felicidad - depresion)
-    ifelse pcolor = 92
+    ifelse plabel = " "
       [set trabajando? true]
       [set trabajando? false]
   ]
@@ -68,7 +93,7 @@ end
 to trabajar
   ask turtles [
     ifelse trabajando?
-      [set felicidad (felicidad + (salario-horas * contrato) - gasto-promedio-dia - depresion)] ;medida de la felicidad
+      [set felicidad (felicidad + (salario-horas * contrato) - gasto-promedio-dia - depresion - desplazamiento)] ;medida de la felicidad
       [set felicidad (felicidad - gasto-promedio-dia - depresion)]
     ifelse felicidad > (sum [felicidad] of turtles) / cantidad-trabajadores ;promedio de felicidad para clasificar
       [set color green]
@@ -181,7 +206,7 @@ MONITOR
 184
 329
 empleos
-count patches with [pcolor = 92]
+count patches with [plabel = \" \"]
 17
 1
 11
@@ -299,8 +324,8 @@ SLIDER
 densidad-empresas
 densidad-empresas
 0
-100
-45.0
+99
+99.0
 1
 1
 NIL
@@ -348,11 +373,37 @@ NIL
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+Simulación del mercado laboral, comparación de un contrato laboral por horas con un contrato estandar de 8 horas. 
 
 ## HOW IT WORKS
+### Construcción del mundo
+#### Tortugas
+Las tortugas tienen 3 variables que definen su comportamiento: 
+- Felicidad
+- Gasto-promedio-dia (min:20 max:120)
+- Desplazamiento (min:5 max:40)
+El valor de Gasto-promedio-dia y Desplazamiento se establecen de forma aleatoria, mediante estas interactuan con los Patchs
 
-(what rules the agents use to create the overall behavior of the model)
+#### Patchs
+Tiene 2 atributos para interactuar con las tortugas:
+salario-horas ;(20 por hora minimo y 120 maximo)
+contrato ;horas diarias de trabajo (minimo 2 y maximo 8)
+
+<code>to setup
+  clear-all
+  create-turtles 100   ;; create 100 turtles with random headings
+  ask turtles
+    [ set color red    ;; turn them red
+      fd 50 ]          ;; spread them around
+  ask patches
+    [ if pxcor > 0         ;; patches on the right side
+        [ set pcolor green ] ]  ;; of the view turn green
+  reset-ticks
+end</code>
+
+
+La felicidad de la tortuga se establece con el calculo:
+(felicidad + (salario-horas * contrato) - gasto-promedio-dia - depresion - desplazamiento)
 
 ## HOW TO USE IT
 
