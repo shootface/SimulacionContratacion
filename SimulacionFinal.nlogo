@@ -24,15 +24,15 @@ to setup-lugares
   ifelse densidad-empresas = 100
   [ask patches [
        if (salario-horas >= 20) and (salario-horas < 40)
-        [set pcolor 97]
+        [set pcolor 98]
       if (salario-horas >= 40) and (salario-horas < 60)
-        [set pcolor 87]
+        [set pcolor 97]
       if (salario-horas >= 60) and (salario-horas < 80)
-        [set pcolor 77]
+        [set pcolor 96]
       if (salario-horas >= 80) and (salario-horas < 100)
-        [set pcolor 67]
+        [set pcolor 95]
       if (salario-horas > 100)
-        [set pcolor 57]
+        [set pcolor 94]
      ]
   ]
   [repeat patches-usados [
@@ -40,15 +40,15 @@ to setup-lugares
       set salario-horas ((random 100 - 20) + 20) ;salario por hora
       set contrato ((random 7) + 2) ;horas por trabajar
       if (salario-horas >= 20) and (salario-horas < 40)
-        [set pcolor 97]
+        [set pcolor 98]
       if (salario-horas >= 40) and (salario-horas < 60)
-        [set pcolor 87]
+        [set pcolor 97]
       if (salario-horas >= 60) and (salario-horas < 80)
-        [set pcolor 77]
+        [set pcolor 96]
       if (salario-horas >= 80) and (salario-horas < 100)
-        [set pcolor 67]
+        [set pcolor 95]
       if (salario-horas > 100)
-        [set pcolor 57]
+        [set pcolor 94]
        ;establece el color de los patches (empresas)
       set plabel " "
     ]
@@ -265,7 +265,7 @@ satisfaccion-laboral
 satisfaccion-laboral
 0
 300
-115.0
+250.0
 5
 1
 NIL
@@ -280,7 +280,7 @@ costo-reproduccion
 costo-reproduccion
 0
 300
-180.0
+165.0
 5
 1
 NIL
@@ -295,7 +295,7 @@ depresion
 depresion
 0
 300
-55.0
+95.0
 5
 1
 NIL
@@ -325,7 +325,7 @@ densidad-empresas
 densidad-empresas
 0
 99
-99.0
+50.0
 1
 1
 NIL
